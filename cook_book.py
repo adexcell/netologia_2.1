@@ -1,62 +1,31 @@
-# Домашнее задание к лекции 2.1 «Открытие и чтение файла, запись в файл»
-# Необходимо написать программу для кулинарной книги.
-#
-# Список рецептов должен храниться в отдельном файле в следующем формате:
-#
-# Название блюда
-# Kоличество ингредиентов в блюде
-# Название ингредиента | Количество | Единица измерения
-# Название ингредиента | Количество | Единица измерения
-# ...
+def cookbook_read():
+  with open('cookbook.txt') as file:
+    lines = file.readlines()
+  cook_book = {}
+  for num, line in enumerate(lines):
+    if line == '\n':
+      continue
+    elif num == 0 or lines[num-1] == '\n':
+      ingridients = []
+      for ingr in lines[num+2:num+2+int(lines[num+1])]:
+        ingr = ingr.split(' | ')
+        ingridients.append({'ingridient_name': ingr[0], 'quantity': int(ingr[1]), 'measure': ingr[2].strip()})
+      cook_book[line.strip()] = ingridients
+  del lines
+  return cook_book
 
-# В одном файле может быть произвольное количество блюд.
-# Читать список рецептов из этого файла.
-# Соблюдайте кодстайл, разбивайте новую логику на функции и не используйте глобальных переменных.
+#print('\n', 'Задание_1:', '\n', '\n', cookbook_read(), '\n', sep = '')
 
-# Задача №1
-# Должен получится следующий словарь
-#
-# cook_book = {
-#   'Омлет': [
-#     {'ingridient_name': 'Яйцо', 'quantity': 2, 'measure': 'шт.'},
-#     {'ingridient_name': 'Молоко', 'quantity': 100, 'measure': 'мл'},
-#     {'ingridient_name': 'Помидор', 'quantity': 2, 'measure': 'шт'}
-#     ],
-#   'Утка по-пекински': [
-#     {'ingridient_name': 'Утка', 'quantity': 1, 'measure': 'шт'},
-#     {'ingridient_name': 'Вода', 'quantity': 2, 'measure': 'л'},
-#     {'ingridient_name': 'Мед', 'quantity': 3, 'measure': 'ст.л'},
-#     {'ingridient_name': 'Соевый соус', 'quantity': 60, 'measure': 'мл'}
-#     ],
-#   'Запеченный картофель': [
-#     {'ingridient_name': 'Картофель', 'quantity': 1, 'measure': 'кг'},
-#     {'ingridient_name': 'Помидор', 'quantity': 2, 'measure': 'шт'},
-#     {'ingridient_name': 'Сыр гауда', 'quantity': 100, 'measure': 'г'},
-#     ]
-#   }
+def get_shop_list_by_dishes(cook_book, person_count):
+  dishes = list(cook_book.keys())
+  ingridients_dict = {}
+  for dish in dishes:
+    if dish in list(cook_book.keys()):
+      for ingr in cook_book[dish]:
+        if ingr['ingridient_name'] not in list(ingridients_dict.keys()):
+          ingridients_dict[ingr['ingridient_name']] = {'measure': ingr['measure'],'quantity': ingr['quantity'] * person_count}
+        else:
+          ingridients_dict[ingr['ingridient_name']]['quantity'] += ingr['quantity'] * person_count
+  return ingridients_dict
 
-
-def load_book_from_file(book_file='recipes.txt'):
-    # Читаем и преобразуем данные в заданный словарь из файла
-    with open(book_file) as book:
-        cook_dict = dict()
-        key_ingridient_dict = ['ingridient_name', 'quantity', 'measure']
-
-        book.seek(0, 2)  # Определяем конец файла и возвращаем указатель в начало файла
-        eof = book.tell()
-        book.seek(0, 0)
-
-        while book.tell() != eof:  # Проверяем конец файла
-            ingridient_list = []
-            key = book.readline().strip() # Наименование блюда
-
-            for ingridient in range(int(book.readline().strip())):
-                value_ingridient_dict = book.readline().strip().split(' | ')
-                value_ingridient_dict[1] = int(value_ingridient_dict[1])
-                ingridient_list.append(dict(zip(key_ingridient_dict, value_ingridient_dict)))
-            cook_dict.setdefault(key, ingridient_list)
-            book.readline()
-
-    return cook_dict
-
-
+print('Задание_2:', '\n', '\n', get_shop_list_by_dishes(cookbook_read(), int(input('Введите кол-во персон: '))), sep='')
