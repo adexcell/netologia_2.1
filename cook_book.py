@@ -1,31 +1,31 @@
 def cookbook_read():
-  with open('recipes.txt') as file:
-    lines = file.readlines()
   cook_book = {}
-  for num, line in enumerate(lines):
-    if line == '\n':
-      continue
-    elif num == 0 or lines[num-1] == '\n':
-      ingridients = []
-      for ingr in lines[num+2:num+2+int(lines[num+1])]:
-        ingr = ingr.split(' | ')
-        ingridients.append({'ingridient_name': ingr[0], 'quantity': int(ingr[1]), 'measure': ingr[2].strip()})
-      cook_book[line.strip()] = ingridients
-  del lines
-  return cook_book
+  with open('recipes.txt') as file:
+    for line in file:
+            key = line.strip()
+            ingredients_count = file.readline().strip()
+            ingredients = []
+            for i in range(int(ingredients_count)):
+                value = file.readline().strip()
+                ingr = value.split(' | ')
+                ingredients.append({'ingredient_name': ingr[0],
+                'quantity': int(ingr[1]), 'measure': ingr[2]})
+            file.readline()
+            cook_book[key] = ingredients
+    return cook_book
 
 #print('\n', 'Задание_1:', '\n', '\n', cookbook_read(), '\n', sep = '')
 
 def get_shop_list_by_dishes(cook_book, person_count):
   dishes = list(cook_book.keys())
-  ingridients_dict = {}
+  ingredients_dict = {}
   for dish in dishes:
-    if dish in list(cook_book.keys()):
+    if dish in cook_book:
       for ingr in cook_book[dish]:
-        if ingr['ingridient_name'] not in list(ingridients_dict.keys()):
-          ingridients_dict[ingr['ingridient_name']] = {'measure': ingr['measure'],'quantity': ingr['quantity'] * person_count}
+        if ingr['ingredient_name'] not in list(ingredients_dict.keys()):
+          ingredients_dict[ingr['ingredient_name']] = {'measure': ingr['measure'],'quantity': ingr['quantity'] * person_count}
         else:
-          ingridients_dict[ingr['ingridient_name']]['quantity'] += ingr['quantity'] * person_count
-  return ingridients_dict
+          ingredients_dict[ingr['ingredient_name']]['quantity'] += ingr['quantity'] * person_count
+  return ingredients_dict
 
-print('Задание_2:', '\n', '\n', get_shop_list_by_dishes(cookbook_read(), int(input('Введите кол-во персон: '))), sep='')
+print(f"Задание_2:\n\n {get_shop_list_by_dishes(cookbook_read(), int(input('Введите кол-во персон: ')))}", sep='')
