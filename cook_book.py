@@ -22,7 +22,7 @@ def get_shop_list_by_dishes(cook_book, person_count):
   for dish in dishes:
     if dish in cook_book:
       for ingr in cook_book[dish]:
-        if ingr['ingredient_name'] not in list(ingredients_dict.keys()):
+        if ingr['ingredient_name'] not in ingredients_dict.keys():
           ingredients_dict[ingr['ingredient_name']] = {'measure': ingr['measure'],'quantity': ingr['quantity'] * person_count}
         else:
           ingredients_dict[ingr['ingredient_name']]['quantity'] += ingr['quantity'] * person_count
